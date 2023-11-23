@@ -1,8 +1,15 @@
 import { Injectable, Logger } from '@nestjs/common';
+import { InjectModel } from '@nestjs/mongoose';
+import { Callback, CallbackDocument } from './schemas/callback.schema';
+import { Model } from 'mongoose';
+import { NotificationPayloadDTO } from './dto/notification-payload';
 
 @Injectable()
 export class CallbackService {
   private readonly logger = new Logger(CallbackService.name);
+  constructor(
+    @InjectModel(Callback.name) private callbackModel: Model<CallbackDocument>,
+  ) {}
 
   /**
    * UPDATE YOUR VERIFY TOKEN
@@ -16,5 +23,12 @@ export class CallbackService {
       return true;
     }
     return false;
+  }
+
+  async create(
+    notificationPayloadDTO: NotificationPayloadDTO,
+  ): Promise<CallbackDocument> {
+    const createdCallback = new this.callbackModel(notificationPayloadDTO);
+    return createdCallback.save();
   }
 }

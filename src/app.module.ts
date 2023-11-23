@@ -5,11 +5,13 @@ import { CallbackModule } from './callback/callback.module';
 import { MessageModule } from './message/message.module';
 import { LoggerMiddleware } from './logger/logger.middleware';
 import { ConfigModule } from '@nestjs/config';
+import { MongooseModule } from '@nestjs/mongoose';
 
 @Module({
   imports: [
     CallbackModule,
     MessageModule,
+    MongooseModule.forRoot(process.env.MONGO_URI),
     ConfigModule.forRoot({
       envFilePath: ['.env.development.local', '.env.development'],
     }),
