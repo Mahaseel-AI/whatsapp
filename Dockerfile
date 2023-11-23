@@ -1,22 +1,20 @@
-# Dockerfile
+# Base image
+FROM node:18
 
-FROM node:18-alpine
-
-# Set the working directory in the container
+# Create app directory
 WORKDIR /usr/src/app
 
-# Copy package.json and package-lock.json to the container
+# A wildcard is used to ensure both package.json AND package-lock.json are copied
 COPY package*.json ./
 
-# Install backend dependencies
+# Install app dependencies
 RUN npm install
 
-# Copy the local code into the container
+# Bundle app source
 COPY . .
 
+# Creates a "dist" folder with the production build
+RUN npm run build
 
-# Expose the port that the NestJS server will run on
-EXPOSE 3000
-
-# Define the command to run your NestJS app
-CMD ["npm", "run", "start"]
+# Start the server using the production build
+CMD [ "node", "dist/main.js" ]
