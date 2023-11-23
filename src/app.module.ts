@@ -11,10 +11,8 @@ import { MongooseModule } from '@nestjs/mongoose';
   imports: [
     CallbackModule,
     MessageModule,
+    ConfigModule.forRoot({ isGlobal: true }),
     MongooseModule.forRoot(process.env.MONGO_URI),
-    ConfigModule.forRoot({
-      envFilePath: ['.env.development.local', '.env.development'],
-    }),
   ],
   controllers: [AppController],
   providers: [AppService],

@@ -10,6 +10,6 @@ export class ReplyService {
   constructor(private readonly httpService: HttpService) {}
 
   sendSimpleText(): Observable<AxiosResponse<WhatsappResponse>> {
-    return this.httpService.get('http://localhost:3000/cats');
+    return this.httpService.post('http://localhost:3000/cats');
   }
 }
