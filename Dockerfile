@@ -1,20 +1,34 @@
-# Base image
-FROM node:18
+# Docker file to run 1 app
 
-# Create app directory
-WORKDIR /usr/src/app
+# Pull base image
+FROM node:18-alpine
 
-# A wildcard is used to ensure both package.json AND package-lock.json are copied
-COPY package*.json ./
 
-# Install app dependencies
-RUN npm install
+# Set working directory
+WORKDIR /usr/app
 
-# Bundle app source
-COPY . .
+# Copy package.json to working directory
+COPY ./package.json ./
+COPY ./yarn.lock ./
 
-# Creates a "dist" folder with the production build
-RUN npm run build
+# Install dependencies
+RUN yarn
 
-# Start the server using the production build
-CMD [ "node", "dist/main.js" ]
+# Copy all files to working directory
+COPY ./ ./
+
+# Build
+RUN yarn run build
+
+# Add nestjs cli just in case we need it (Failed once without it so now just keep it in meh)
+# RUN npm install -g @nestjs/cli
+
+
+# Set environment variables
+ENV PORT=8080
+
+# Expose port 8080
+EXPOSE 8080
+
+# Start Nginx and serve application
+CMD ["yarn", "run", "start"]
