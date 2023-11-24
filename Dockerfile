@@ -31,4 +31,6 @@ ENV PORT=8080
 EXPOSE 8080
 
 # Start Nginx and serve application
-CMD ["yarn", "run", "start"]
+CMD ["yarn", "run", "start:prod"]
+
+ 

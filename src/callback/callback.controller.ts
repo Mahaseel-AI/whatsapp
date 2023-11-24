@@ -30,20 +30,16 @@ export class CallbackController {
   }
 
   @Post('/webhook')
-  postWebhook(@Body() body: NotificationPayloadDTO): string {
-    this.callbackService.create(body);
-    if (
-      body.entry &&
-      body.entry[0].changes &&
-      body.entry[0].changes[0] &&
-      body.entry[0].changes[0].value.messages &&
-      body.entry[0].changes[0].value.messages[0]
-    ) {
-      this.replyService.sendSimpleAwayMessage(
+  async postWebhook(@Body() body: NotificationPayloadDTO): Promise<string> {
+    if (body.entry[0]?.changes[0]?.value?.messages[0]?.type === 'text') {
+      console.log(body.entry[0].changes[0].value.messages[0].text.body);
+      await this.callbackService.create(body);
+      await this.replyService.sendSimpleAwayMessage(
         body.entry[0].changes[0].value.messages[0].from,
+        body.entry[0].changes[0].value.contacts[0].profile.name,
       );
     }
-
-    return 'callback saved';
+    console.log('ignore callback not saved');
+    return 'ignore callback not saved';
   }
 }
