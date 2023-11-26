@@ -13,18 +13,18 @@ abstract class Webhook {
 @Injectable()
 export class VerifyWebhook extends Webhook {
   isTextMessage(payload: NotificationPayloadDTO): boolean {
-    return payload[0]?.changes[0]?.value?.messages[0]?.type === 'text';
+    return payload.entry[0]?.changes[0]?.value?.messages[0]?.type === 'text';
   }
   isImageMessage(payload: NotificationPayloadDTO): boolean {
-    return payload[0]?.changes[0]?.value?.messages[0]?.type === 'image';
+    return payload.entry[0]?.changes[0]?.value?.messages[0]?.type === 'image';
   }
   isStickerMessage(payload: NotificationPayloadDTO): boolean {
-    return payload[0]?.changes[0]?.value?.messages[0]?.type === 'sticker';
+    return payload.entry[0]?.changes[0]?.value?.messages[0]?.type === 'sticker';
   }
   isUnknownMessage(payload: NotificationPayloadDTO): boolean {
-    return payload[0]?.changes[0]?.value?.messages[0]?.type === 'unknown';
+    return payload.entry[0]?.changes[0]?.value?.messages[0]?.type === 'unknown';
   }
   isAudioMessage(payload: NotificationPayloadDTO): boolean {
-    return payload[0]?.changes[0]?.value?.messages[0]?.type === 'audio';
+    return payload.entry[0]?.changes[0]?.value?.messages[0]?.type === 'audio';
   }
 }

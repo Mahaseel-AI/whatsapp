@@ -5,6 +5,8 @@ import { ReplyService } from './reply/reply.service';
 import { HttpModule } from '@nestjs/axios';
 import { MongooseModule } from '@nestjs/mongoose';
 import { Callback, CallbackSchema } from './schemas/callback.schema';
+import { VerifyWebhook } from './helpers/webhook.helper';
+import { MessageTemplate } from './templates/messages.template';
 
 @Module({
   imports: [
@@ -14,6 +16,6 @@ import { Callback, CallbackSchema } from './schemas/callback.schema';
     ]),
   ],
   controllers: [CallbackController],
-  providers: [CallbackService, ReplyService],
+  providers: [CallbackService, ReplyService, VerifyWebhook, MessageTemplate],
 })
 export class CallbackModule {}

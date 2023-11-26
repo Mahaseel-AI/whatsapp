@@ -10,7 +10,7 @@ import { CallbackService } from './callback.service';
 import { NotificationPayloadDTO } from './dto/notification-payload';
 import { ReplyService } from './reply/reply.service';
 import { VerifyWebhook } from './helpers/webhook.helper';
-import { MessageTemplate } from './templates/webhook.helper';
+import { MessageTemplate } from './templates/messages.template';
 
 @Controller('callback')
 export class CallbackController {
@@ -43,7 +43,7 @@ export class CallbackController {
       await this.replyService.sendTextMessage(
         body.entry[0].changes[0].value.messages[0].from,
         this.messageTemplate.awayMessage(
-          body.entry[0].changes[0].value.contacts[0].profile.name,
+          body.entry[0]?.changes[0]?.value?.contacts[0].profile.name,
         ),
       );
     }
@@ -51,7 +51,7 @@ export class CallbackController {
     // receivingImage
     if (this.verify.isImageMessage(body)) {
       await this.replyService.sendTextMessage(
-        body.entry[0].changes[0].value.messages[0].from,
+        body.entry[0]?.changes[0]?.value?.messages[0]?.from,
         this.messageTemplate.receivingImage(
           body.entry[0].changes[0].value.contacts[0].profile.name,
         ),
@@ -61,10 +61,9 @@ export class CallbackController {
     // receivingAudio
     if (this.verify.isAudioMessage(body)) {
       await this.replyService.sendAudioMessage(
-        body.entry[0].changes[0].value.messages[0].from,
+        body.entry[0]?.changes[0]?.value?.messages[0]?.from,
       );
     }
-    console.log('ignore callback not saved');
-    return 'ignore callback not saved';
+    return Promise.resolve('ignore callback not saved');
   }
 }
