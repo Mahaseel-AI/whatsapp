@@ -16,8 +16,6 @@ export class CallbackService {
    *This will be the Verify Token value when you set up webhook
    **/
   verifyToken(mode, token): boolean {
-    this.logger.log('mode', mode);
-    this.logger.log('token', token);
     if (mode === 'subscribe' && token === process.env.VERIFY_TOKEN) {
       // Respond with 200 OK and challenge token from the request
       return true;
@@ -28,6 +26,7 @@ export class CallbackService {
   async create(
     notificationPayloadDTO: NotificationPayloadDTO,
   ): Promise<CallbackDocument> {
+    this.logger.log('save new icomming callback message to DB');
     const createdCallback = new this.callbackModel(notificationPayloadDTO);
     return createdCallback.save();
   }

@@ -3,7 +3,7 @@ import { Document } from 'mongoose';
 
 export type CallbackDocument = Callback & Document;
 
-@Schema()
+@Schema({ timestamps: true })
 export class Callback {
   @Prop({ required: true })
   object: string;

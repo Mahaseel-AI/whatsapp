@@ -9,12 +9,16 @@ import {
 import { CallbackService } from './callback.service';
 import { NotificationPayloadDTO } from './dto/notification-payload';
 import { ReplyService } from './reply/reply.service';
+import { VerifyWebhook } from './helpers/webhook.helper';
+import { MessageTemplate } from './templates/webhook.helper';
 
 @Controller('callback')
 export class CallbackController {
   constructor(
     private readonly callbackService: CallbackService,
     private readonly replyService: ReplyService,
+    private readonly verify: VerifyWebhook,
+    private readonly messageTemplate: MessageTemplate,
   ) {}
 
   @Get('/webhook')
@@ -31,12 +35,33 @@ export class CallbackController {
 
   @Post('/webhook')
   async postWebhook(@Body() body: NotificationPayloadDTO): Promise<string> {
-    if (body.entry[0]?.changes[0]?.value?.messages[0]?.type === 'text') {
-      console.log(body.entry[0].changes[0].value.messages[0].text.body);
-      await this.callbackService.create(body);
-      await this.replyService.sendSimpleAwayMessage(
+    // save callback
+    await this.callbackService.create(body);
+
+    // send awayMessage
+    if (this.verify.isTextMessage(body)) {
+      await this.replyService.sendTextMessage(
         body.entry[0].changes[0].value.messages[0].from,
-        body.entry[0].changes[0].value.contacts[0].profile.name,
+        this.messageTemplate.awayMessage(
+          body.entry[0].changes[0].value.contacts[0].profile.name,
+        ),
+      );
+    }
+
+    // receivingImage
+    if (this.verify.isImageMessage(body)) {
+      await this.replyService.sendTextMessage(
+        body.entry[0].changes[0].value.messages[0].from,
+        this.messageTemplate.receivingImage(
+          body.entry[0].changes[0].value.contacts[0].profile.name,
+        ),
+      );
+    }
+
+    // receivingAudio
+    if (this.verify.isAudioMessage(body)) {
+      await this.replyService.sendAudioMessage(
+        body.entry[0].changes[0].value.messages[0].from,
       );
     }
     console.log('ignore callback not saved');
