@@ -40,11 +40,12 @@ export class CallbackController {
 
     // send awayMessage
     if (this.verify.isTextMessage(body)) {
+      const AIresponse = await this.callbackService.handleTextMessage(
+        body.entry[0].changes[0].value.messages[0].text.body,
+      );
       await this.replyService.sendTextMessage(
         body.entry[0].changes[0].value.messages[0].from,
-        this.messageTemplate.awayMessage(
-          body.entry[0]?.changes[0]?.value?.contacts[0].profile.name,
-        ),
+        AIresponse,
       );
     }
 

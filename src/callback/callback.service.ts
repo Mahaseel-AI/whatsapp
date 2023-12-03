@@ -3,12 +3,14 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Callback, CallbackDocument } from './schemas/callback.schema';
 import { Model } from 'mongoose';
 import { NotificationPayloadDTO } from './dto/notification-payload';
+import { LangChainService } from './helpers/langchain.helper';
 
 @Injectable()
 export class CallbackService {
   private readonly logger = new Logger(CallbackService.name);
   constructor(
     @InjectModel(Callback.name) private callbackModel: Model<CallbackDocument>,
+    private readonly langChainService: LangChainService,
   ) {}
 
   /**
@@ -29,5 +31,9 @@ export class CallbackService {
     this.logger.log('save new icomming callback message to DB');
     const createdCallback = new this.callbackModel(notificationPayloadDTO);
     return createdCallback.save();
+  }
+
+  async handleTextMessage(txt: string): Promise<string> {
+    return this.langChainService.callLLMChat(txt);
   }
 }

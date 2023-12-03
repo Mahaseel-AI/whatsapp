@@ -7,6 +7,7 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { Callback, CallbackSchema } from './schemas/callback.schema';
 import { VerifyWebhook } from './helpers/webhook.helper';
 import { MessageTemplate } from './templates/messages.template';
+import { LangChainService } from './helpers/langchain.helper';
 
 @Module({
   imports: [
@@ -16,6 +17,12 @@ import { MessageTemplate } from './templates/messages.template';
     ]),
   ],
   controllers: [CallbackController],
-  providers: [CallbackService, ReplyService, VerifyWebhook, MessageTemplate],
+  providers: [
+    CallbackService,
+    ReplyService,
+    VerifyWebhook,
+    MessageTemplate,
+    LangChainService,
+  ],
 })
 export class CallbackModule {}
