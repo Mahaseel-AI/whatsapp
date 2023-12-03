@@ -1,4 +1,6 @@
 import { Injectable, Logger } from '@nestjs/common';
+import { BufferMemory } from 'langchain/memory';
+import { RedisChatMessageHistory } from 'langchain/stores/message/ioredis';
 import { ChatOpenAI } from 'langchain/chat_models/openai';
 import { ConversationChain } from 'langchain/chains';
 
@@ -7,13 +9,13 @@ import {
   SystemMessagePromptTemplate,
 } from 'langchain/prompts';
 
-const systemMessage =
-  "You are a helpful AI assistant named Hodhod (هدهد) focused on Agriculture. If you don't know the answer, just say you don't know. Do NOT try to make up an If the question is not related to the context, politely respond that you are tuned to only answer questions that are related to the context. Use as much detail as possible when responding.";
+const systemMessage = 'You are an expert in agriculture called Mahseel';
 
 @Injectable()
 export class LangChainService {
   logger: Logger = new Logger(LangChainService.name);
   model: ChatOpenAI;
+  memory: BufferMemory;
 
   chatPromptMessages = [
     SystemMessagePromptTemplate.fromTemplate(systemMessage),
@@ -31,19 +33,28 @@ export class LangChainService {
       azureOpenAIBasePath: process.env.OPENAI_BASE_URL,
       azureOpenAIApiKey: process.env.OPENAI_API_KEY,
     });
+
+    this.memory = new BufferMemory({
+      chatHistory: new RedisChatMessageHistory({
+        config: {
+          username: 'default',
+          password: 'wV0vrY9ySrDJEftYlultlcAX7rTRrNYMlAzCaONgWes',
+        },
+        sessionId: new Date().toISOString(), // Or some other unique identifier for the conversation
+        sessionTTL: 300, // 5 minutes, omit this parameter to make sessions never expire
+        url: 'mahaseel-dev.redis.cache.windows.net:6380,password=wV0vrY9ySrDJEftYlultlcAX7rTRrNYMlAzCaONgWes=,ssl=True,abortConnect=False', // Default value, override with your own instance's URL
+      }),
+    });
   }
 
-  async callLLMChat(query: string) {
+  async callLLMChat(query: string): Promise<string> {
     const chain = new ConversationChain({
       llm: this.model,
-      prompt: this.chatPromptTemplate,
+      memory: this.memory,
     });
-
-    const res = await chain.call({
-      question: query,
-      // chat_history: this.getMemory(history),
-    });
-
+    const res = await chain.call({ input: query });
+    //  const res = await this.model.call(query);
+    console.log(res);
     return res.response;
   }
 }

@@ -6,6 +6,7 @@ import {
   Patch,
   Param,
   Delete,
+  Query,
 } from '@nestjs/common';
 import { MessageService } from './message.service';
 import { CreateMessageDto } from './dto/create-message.dto';
@@ -21,8 +22,8 @@ export class MessageController {
   }
 
   @Get()
-  findAll() {
-    return this.messageService.test();
+  findAll(@Query('q') question: string) {
+    return this.messageService.test(question);
   }
 
   @Get(':id')
