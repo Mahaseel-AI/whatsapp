@@ -36,13 +36,13 @@ export class LangChainService {
 
     this.memory = new BufferMemory({
       chatHistory: new RedisChatMessageHistory({
-        config: {
-          username: 'default',
-          password: 'wV0vrY9ySrDJEftYlultlcAX7rTRrNYMlAzCaONgWes',
-        },
+        // config: {
+        //   username: 'default',
+        //   password: 'wV0vrY9ySrDJEftYlultlcAX7rTRrNYMlAzCaONgWes',
+        // },
         sessionId: new Date().toISOString(), // Or some other unique identifier for the conversation
         sessionTTL: 300, // 5 minutes, omit this parameter to make sessions never expire
-        url: 'mahaseel-dev.redis.cache.windows.net:6380,password=wV0vrY9ySrDJEftYlultlcAX7rTRrNYMlAzCaONgWes=,ssl=True,abortConnect=False', // Default value, override with your own instance's URL
+        url: 'redis://localhost:6379', // Default value, override with your own instance's URL
       }),
     });
   }
