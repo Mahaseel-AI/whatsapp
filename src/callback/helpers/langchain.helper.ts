@@ -1,29 +1,23 @@
 import { Injectable, Logger } from '@nestjs/common';
-import { BufferMemory } from 'langchain/memory';
-import { RedisChatMessageHistory } from 'langchain/stores/message/ioredis';
+import { BufferWindowMemory } from 'langchain/memory';
 import { ChatOpenAI } from 'langchain/chat_models/openai';
 import { ConversationChain } from 'langchain/chains';
-
-import {
-  ChatPromptTemplate,
-  SystemMessagePromptTemplate,
-} from 'langchain/prompts';
-
-const systemMessage = 'You are an expert in agriculture called Mahseel';
+import { ChatPromptTemplate, MessagesPlaceholder } from 'langchain/prompts';
 
 @Injectable()
 export class LangChainService {
   logger: Logger = new Logger(LangChainService.name);
   model: ChatOpenAI;
-  memory: BufferMemory;
+  memory: BufferWindowMemory;
 
-  chatPromptMessages = [
-    SystemMessagePromptTemplate.fromTemplate(systemMessage),
-  ];
-
-  chatPromptTemplate = ChatPromptTemplate.fromPromptMessages(
-    this.chatPromptMessages,
-  );
+  promptTemplate = ChatPromptTemplate.fromPromptMessages([
+    [
+      'system',
+      'The following is a friendly conversation between a human and Mahseel AI an expert in agriculture. Mahseel is talkative and provides lots of specific details from its context. If Mahseel does not know the answer to a question, it truthfully says it does not know.',
+    ],
+    new MessagesPlaceholder('history'),
+    ['human', '{input}'],
+  ]);
 
   constructor() {
     this.model = new ChatOpenAI({
@@ -34,27 +28,20 @@ export class LangChainService {
       azureOpenAIApiKey: process.env.OPENAI_API_KEY,
     });
 
-    this.memory = new BufferMemory({
-      chatHistory: new RedisChatMessageHistory({
-        // config: {
-        //   username: 'default',
-        //   password: 'wV0vrY9ySrDJEftYlultlcAX7rTRrNYMlAzCaONgWes',
-        // },
-        sessionId: new Date().toISOString(), // Or some other unique identifier for the conversation
-        sessionTTL: 300, // 5 minutes, omit this parameter to make sessions never expire
-        url: 'redis://localhost:6379', // Default value, override with your own instance's URL
-      }),
+    this.memory = new BufferWindowMemory({
+      k: 3,
+      returnMessages: true,
+      memoryKey: 'history',
     });
   }
 
   async callLLMChat(query: string): Promise<string> {
     const chain = new ConversationChain({
       llm: this.model,
+      prompt: this.promptTemplate,
       memory: this.memory,
     });
     const res = await chain.call({ input: query });
-    //  const res = await this.model.call(query);
-    console.log(res);
     return res.response;
   }
 }

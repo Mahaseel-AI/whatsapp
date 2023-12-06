@@ -23,7 +23,7 @@ export class MessageController {
 
   @Get()
   findAll(@Query('q') question: string) {
-    return this.messageService.test(question);
+    return this.messageService.test(question, '201015538766');
   }
 
   @Get(':id')
