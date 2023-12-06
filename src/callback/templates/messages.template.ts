@@ -7,6 +7,6 @@ export class MessageTemplate {
   }
 
   receivingImage(recipient_name): string {
-    return `Thanks ${recipient_name} for the image you sent. Our team is currently working diligently on applying machine learning algorithms to analyze the content. The process may take some time, as we want to ensure a thorough and accurate analysis.`;
+    return `Hi ${recipient_name} at the moment, I'm in a situation where I'm unable to take a image and analyze 😓, would it be possible for us to continue our conversation through text instead? `;
   }
 }

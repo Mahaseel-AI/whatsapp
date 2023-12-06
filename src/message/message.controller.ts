@@ -21,10 +21,10 @@ export class MessageController {
     return this.messageService.create(createMessageDto);
   }
 
-  @Get()
-  findAll(@Query('q') question: string) {
-    return this.messageService.test(question, '201015538766');
-  }
+  // @Get()
+  // findAll(@Query('q') question: string) {
+  //   return this.messageService.test(question, '201015538766');
+  // }
 
   @Get(':id')
   findOne(@Param('id') id: string) {

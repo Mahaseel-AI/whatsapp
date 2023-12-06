@@ -11,8 +11,7 @@ export class MessageService {
     return 'This action adds a new message';
   }
 
-  async test(question: string, phoneNumber: string): Promise<string> {
-    this.langChainService.phoneNumber = phoneNumber;
+  async test(question: string): Promise<string> {
     return this.langChainService.callLLMChat(question);
   }
 
