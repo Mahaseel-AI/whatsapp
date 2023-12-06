@@ -36,10 +36,10 @@ export class CallbackController {
   @Post('/webhook')
   async postWebhook(@Body() body: NotificationPayloadDTO): Promise<string> {
     // save callback
-    await this.callbackService.create(body);
 
     // send awayMessage
     if (this.verify.isTextMessage(body)) {
+      await this.callbackService.create(body);
       const AIresponse = await this.callbackService.handleTextMessage(
         body.entry[0].changes[0].value.messages[0].text.body,
       );
@@ -51,6 +51,7 @@ export class CallbackController {
 
     // receivingImage
     if (this.verify.isImageMessage(body)) {
+      await this.callbackService.create(body);
       await this.replyService.sendTextMessage(
         body.entry[0]?.changes[0]?.value?.messages[0]?.from,
         this.messageTemplate.receivingImage(
@@ -61,6 +62,7 @@ export class CallbackController {
 
     // receivingAudio
     if (this.verify.isAudioMessage(body)) {
+      await this.callbackService.create(body);
       await this.replyService.sendAudioMessage(
         body.entry[0]?.changes[0]?.value?.messages[0]?.from,
       );
